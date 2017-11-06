@@ -1,0 +1,24 @@
+#find the Id number
+Dunwich<-gutenberg_works() %>%
+  filter(title == "The Dunwich Horror")
+
+#download novel and store as dataframe
+Horror<-gutenberg_download(50133)
+
+
+Horror<-Horror%>%
+  filter(!str_detect(Horror$text,'CHAPTER'))
+
+
+
+words_df<-Horror%>%
+  unnest_tokens(word,text)
+
+words_df<-words_df%>%
+  filter(!word %in% stop_words$word) #<-only remove common words
+
+word_freq<-words_df%>%
+  group_by(word)%>%
+  summarise(count=n())
+
+wordcloud(word_freq$word,word_freq$count,min.freq=10,color=brewer.pal(2, 'Dark2'))
